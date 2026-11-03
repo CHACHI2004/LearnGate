@@ -41,8 +41,9 @@ services:
       - key: MAIL_FROM
         sync: false
 
-  - type: static_site
+  - type: web
     name: learngate-client
+    runtime: static
     buildCommand: npm ci && npm run build --workspace client
     staticPublishPath: ./client/dist
     routes:
