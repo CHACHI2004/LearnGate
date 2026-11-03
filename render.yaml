@@ -3,7 +3,7 @@ services:
     name: learngate-api
     runtime: node
     plan: free
-    buildCommand: npm ci && npm run build --workspace server
+    buildCommand: npm ci --include=dev && npm run build --workspace server
     startCommand: npm run start --workspace server
     healthCheckPath: /api/v1/health/ready
     envVars:
@@ -45,7 +45,7 @@ services:
   - type: web
     name: learngate-client
     runtime: static
-    buildCommand: npm ci && npm run build --workspace client
+    buildCommand: npm ci --include=dev && npm run build --workspace client
     staticPublishPath: ./client/dist
     routes:
       - type: rewrite

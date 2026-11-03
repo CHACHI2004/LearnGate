@@ -19,7 +19,8 @@ quiz and flashcard generation jobs run in the API process.
 
 1. In Render, choose **New → Blueprint** and connect the GitHub repository.
    Render will read `render.yaml` and create `learngate-api` and
-   `learngate-client`.
+   `learngate-client`. The build commands install development dependencies
+   because TypeScript, Vite, and type declarations are needed to compile.
 2. Set the API service's `MONGODB_URI` to the production connection string.
    The Blueprint generates a unique `JWT_SECRET`.
 3. After the services are created, copy their Render URLs and set:
