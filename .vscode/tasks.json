@@ -1,0 +1,482 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "LearnGate visual typecheck",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "LearnGate visual regression tests",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "LearnGate visual production build",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "LearnGate visual browser server",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"D:\\learngate\\node_modules\\vite\\bin\\vite.js",
+				"D:\\learngate\\client",
+				"--config",
+				"D:\\learngate\\client\\vite.config.ts",
+				"--port",
+				"5181"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "LearnGate client build",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build",
+				"--workspace",
+				"client"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check legacy PowerPoint parsers",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"view",
+				"officeparser@5.1.1",
+				"engines",
+				"dependencies",
+				"--json"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Add legacy PPT parser",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"--workspace",
+				"server",
+				"ppt-to-text@1.0.1"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Typecheck flashcard changes",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Test flashcard changes",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run all tests",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Audit dependencies",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"audit"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Production build validation",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Final TypeScript validation",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Final production build",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Final test suite",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Verify legacy PPT extraction",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const PPT=require('ppt-to-text'); const CFB=require('cfb'); const rec=(type,body,ver=0)=>{const h=Buffer.alloc(8);h.writeUInt16LE(ver,0);h.writeUInt16LE(type,2);h.writeUInt32LE(body.length,4);return Buffer.concat([h,body]);};const text=rec(0x0FA0,Buffer.from('Legacy PowerPoint extraction contains sufficient educational slide text for this parser integration test.','utf16le'));const textbox=rec(0xF00D,text,0xF);const shape=rec(0xF004,textbox,0xF);const group=rec(0xF003,shape,0xF);const drawing=rec(0x040C,rec(0xF002,group,0xF));const slide=rec(0x03EE,drawing);const editBody=Buffer.alloc(16);editBody.writeUInt32LE(slide.length+24,12);const persist=rec(0x1772,Buffer.alloc(0));const pptDocument=Buffer.concat([slide,rec(0x0FF5,editBody),persist]);const currentUserBody=Buffer.alloc(12);const currentUser=rec(0x0FF6,currentUserBody);const cfb=CFB.utils.cfb_new();CFB.utils.cfb_add(cfb,'Current User',currentUser);CFB.utils.cfb_add(cfb,'PowerPoint Document',pptDocument);const buffer=CFB.write(cfb,{type:'buffer'});const parsed=PPT.utils.to_text(PPT.readBuffer(buffer));if(!parsed[0]?.includes('Legacy PowerPoint extraction'))throw new Error(JSON.stringify(parsed));console.log(JSON.stringify({slides:parsed.length,firstSlide:parsed[0]}));"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Legacy PPT parser integration check",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const PPT=require(\"ppt-to-text\"); const CFB=require(\"cfb\"); const rec=(type,body,ver=0)=>{const h=Buffer.alloc(8);h.writeUInt16LE(ver,0);h.writeUInt16LE(type,2);h.writeUInt32LE(body.length,4);return Buffer.concat([h,body]);};const text=rec(0x0FA0,Buffer.from(\"Legacy PowerPoint extraction contains sufficient educational slide text for this parser integration test.\",\"utf16le\"));const textbox=rec(0xF00D,text,0xF);const shape=rec(0xF004,textbox,0xF);const group=rec(0xF003,shape,0xF);const drawing=rec(0x040C,rec(0xF002,group,0xF));const slide=rec(0x03EE,drawing);const editBody=Buffer.alloc(16);editBody.writeUInt32LE(slide.length+24,12);const persist=rec(0x1772,Buffer.alloc(0));const pptDocument=Buffer.concat([slide,rec(0x0FF5,editBody),persist]);const currentUserBody=Buffer.alloc(12);const currentUser=rec(0x0FF6,currentUserBody);const cfb=CFB.utils.cfb_new();CFB.utils.cfb_add(cfb,\"Current User\",currentUser);CFB.utils.cfb_add(cfb,\"PowerPoint Document\",pptDocument);const buffer=CFB.write(cfb,{type:\"buffer\"});const parsed=PPT.utils.to_text(PPT.readBuffer(buffer));if(!parsed[0]?.includes(\"Legacy PowerPoint extraction\"))throw new Error(JSON.stringify(parsed));console.log(JSON.stringify({slides:parsed.length,firstSlide:parsed[0]}));"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run legacy PPT parser smoke test",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"server\\tests\\legacy-ppt-integration-temp.cjs"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Add PPT test utility",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"--workspace",
+				"server",
+				"--save-dev",
+				"cfb@1.2.2"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Flashcard test suite",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test",
+				"--workspace",
+				"server",
+				"--",
+				"tests/document-extraction.test.ts"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Flashcard typecheck final",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Complete LMS production build",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Check dependency vulnerabilities",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"audit"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Full server regression run",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Email verification typecheck",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Email template tests",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test",
+				"--workspace",
+				"server",
+				"--",
+				"tests/email.test.ts"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Test verification emails",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Verify auth experience",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Build verification updates",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Check Vite page response",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-I",
+				"--max-time",
+				"5",
+				"http://localhost:5173"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check API health endpoint",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-i",
+				"--max-time",
+				"5",
+				"http://localhost:5000/api/v1/health"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check authentication response",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-i",
+				"--max-time",
+				"5",
+				"http://localhost:5000/api/v1/auth/session"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check login API route",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-i",
+				"--max-time",
+				"5",
+				"-H",
+				"Origin: http://localhost:5173",
+				"-H",
+				"Content-Type: application/json",
+				"-d",
+				"{}",
+				"http://localhost:5000/api/v1/auth/login"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check API health now",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-i",
+				"--max-time",
+				"5",
+				"http://localhost:5000/api/v1/health"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check API and database readiness",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"fetch('http://localhost:5000/api/v1/health/ready').then(async r=>{console.log('API readiness:',r.status,await r.text())}).catch(e=>{console.error(e.message);process.exit(1)})"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check API database readiness",
+			"type": "shell",
+			"command": "curl.exe",
+			"args": [
+				"-i",
+				"--max-time",
+				"8",
+				"http://localhost:5000/api/v1/health/ready"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Test Groq client",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"test",
+				"--workspace",
+				"server",
+				"--",
+				"tests/groq-client.test.ts"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Typecheck AI generation",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"typecheck",
+				"--workspace",
+				"server"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		}
+	]
+}

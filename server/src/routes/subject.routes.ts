@@ -1,0 +1,20 @@
+import { Router } from "express";
+import { requireAuth, requireRoles } from "../middleware/auth.js";
+import { requireSubjectAccess } from "../middleware/resource-access.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { archive, create, joinSubject, listPeople, listSubjects, readFacultyDashboard, readSubject, regenerateJoinCode, removePerson, reorderTopics, update } from "../controllers/subject.controller.js";
+
+const router = Router();
+router.use(requireAuth);
+router.get("/", requireRoles("student", "faculty"), asyncHandler(listSubjects));
+router.get("/dashboard", requireRoles("faculty"), asyncHandler(readFacultyDashboard));
+router.post("/", requireRoles("faculty"), asyncHandler(create));
+router.post("/join", requireRoles("student"), asyncHandler(joinSubject));
+router.get("/:id", requireRoles("student", "faculty"), requireSubjectAccess, asyncHandler(readSubject));
+router.patch("/:id", requireRoles("faculty"), requireSubjectAccess, asyncHandler(update));
+router.delete("/:id", requireRoles("faculty"), requireSubjectAccess, asyncHandler(archive));
+router.post("/:id/join-code", requireRoles("faculty"), requireSubjectAccess, asyncHandler(regenerateJoinCode));
+router.get("/:id/people", requireRoles("faculty"), requireSubjectAccess, asyncHandler(listPeople));
+router.delete("/:id/people/:studentId", requireRoles("faculty"), requireSubjectAccess, asyncHandler(removePerson));
+router.put("/:id/topics/order", requireRoles("faculty"), requireSubjectAccess, asyncHandler(reorderTopics));
+export default router;
