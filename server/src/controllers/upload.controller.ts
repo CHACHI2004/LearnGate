@@ -2,6 +2,7 @@ import { fileTypeFromBuffer } from "file-type";
 import type { RequestHandler } from "express";
 import multer from "multer";
 import { env } from "../config/env.js";
+import { getCloudinary } from "../config/cloudinary.js";
 import { TopicModel } from "../models/topic.model.js";
 import { isTopicUnlocked } from "../middleware/resource-access.js";
 import { objectIdSchema } from "../validators/subject.validators.js";

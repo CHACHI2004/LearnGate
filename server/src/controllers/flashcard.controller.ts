@@ -257,8 +257,8 @@ export const deleteFlashcardDeck: RequestHandler = async (request, response) => 
     await deleteStoredFile({
       databaseFileId: deck.sourceFile.databaseFileId,
       publicId: deck.sourceFile.publicId,
-      resourceType: deck.sourceFile.resourceType,
-      deliveryType: deck.sourceFile.deliveryType,
+      resourceType: "raw",
+      deliveryType: "authenticated",
     });
   }
   response.status(204).end();
