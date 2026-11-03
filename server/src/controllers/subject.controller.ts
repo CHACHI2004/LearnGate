@@ -1,4 +1,4 @@
-can yimport mongoose from "mongoose";
+import mongoose from "mongoose";
 import type { RequestHandler } from "express";
 import { EnrollmentModel } from "../models/enrollment.model.js";
 import { AttemptModel } from "../models/attempt.model.js";
