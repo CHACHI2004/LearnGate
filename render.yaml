@@ -2,6 +2,7 @@ services:
   - type: web
     name: learngate-api
     runtime: node
+    plan: free
     buildCommand: npm ci && npm run build --workspace server
     startCommand: npm run start --workspace server
     healthCheckPath: /api/v1/health/ready
