@@ -9,6 +9,7 @@ import { SubjectModel } from "../models/subject.model.js";
 import { TopicModel } from "../models/topic.model.js";
 import { isTopicUnlocked } from "../middleware/resource-access.js";
 import { gradeQuizAnswers } from "../services/quiz-grading.js";
+import { sendQuizResultNotifications } from "../services/quiz-result-email.service.js";
 import { objectIdSchema } from "../validators/subject.validators.js";
 import { saveQuizSchema, submitAttemptSchema } from "../validators/quiz.validators.js";
 
@@ -422,6 +423,12 @@ export const submitAttempt: RequestHandler = async (request, response) => {
 
   const expired = now.getTime() > attempt.expiresAt.getTime();
   await finalizeAttempt(attempt, questions, now, expired);
+  try {
+    await sendQuizResultNotifications(attempt);
+  } catch (error) {
+    console.error("Quiz result notifications could not be sent",
+      error instanceof Error ? error.message : "Unknown notification error");
+  }
   const details = attempt.resultDetails as Array<{ questionId: mongoose.Types.ObjectId; isCorrect: boolean; pointsEarned: number }>;
   response.json({
     data: {

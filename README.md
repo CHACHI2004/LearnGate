@@ -7,7 +7,7 @@ LearnGate is a full-stack learning management system for faculty-led courses. Fa
 - **Client:** React 19, TypeScript, Vite, Tailwind CSS, TanStack Query, Recharts
 - **API:** Node.js 20.19+, Express 5, TypeScript
 - **Database:** MongoDB with Mongoose
-- **Integrations:** Cloudinary uploads, Mailtrap-compatible SMTP, Groq quiz and flashcard generation
+- **Integrations:** Cloudinary uploads, Gmail SMTP email, Groq quiz and flashcard generation
 
 ## Requirements
 
@@ -65,9 +65,9 @@ From the repository root:
 
 ## Configure optional integrations
 
-### Email verification and password recovery (Mailtrap SMTP)
+### Email and quiz-result notifications (SMTP)
 
-Set `MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USER`, `MAILTRAP_PASS`, and a verified `MAIL_FROM` sender in `server/.env`. Use a Mailtrap sandbox for local testing. For production, use an SMTP provider/account that is authorized to deliver to real recipients. Account registration, email verification, and password reset depend on working SMTP credentials. Never expose SMTP credentials to the client.
+Set `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` to the sending Gmail address, and `SMTP_PASS` to a Google App Password in `server/.env`. App Passwords require 2-Step Verification; do not use your regular Gmail password. Email will be sent from `SMTP_USER` unless an optional `MAIL_FROM` override is set. Account registration, verification, password recovery, and quiz-result emails depend on working SMTP credentials. When a student submits a quiz, the result is emailed separately to the student and the faculty member who owns that class. Never expose SMTP credentials to the client.
 
 ### File storage (Cloudinary)
 

@@ -26,7 +26,7 @@ Set these variables in the API host’s secret/environment settings, not in Verc
 - `COOKIE_SECURE=true`
 - `CLIENT_URL=https://learn.example.com`
 - `CLIENT_URLS=https://learn.example.com` (comma-separated exact trusted origins if there are additional production client origins)
-- `MAILTRAP_HOST`, `MAILTRAP_PORT`, `MAILTRAP_USER`, `MAILTRAP_PASS`, and `MAIL_FROM` for production-capable SMTP delivery
+- `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER`, and `SMTP_PASS` for Gmail SMTP delivery
 - Optional integrations: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `AI_PROVIDER=groq`, `GROQ_API_KEY`, and `GROQ_MODEL`
 
 Set `COOKIE_DOMAIN=.example.com` only if you deliberately need the cookie shared across subdomains. Otherwise leave it unset. Use HTTPS for both client and API. Do not put server secrets in `VITE_*` variables or commit them to the repository.

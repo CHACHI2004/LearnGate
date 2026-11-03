@@ -29,9 +29,10 @@ quiz and flashcard generation jobs run in the API process.
    - Client `VITE_API_BASE_URL`: the API URL plus `/api/v1`, for example
      `https://learngate-api.onrender.com/api/v1`.
 4. Add Cloudinary credentials to enable file uploads, Groq credentials for AI
-   generation, and production-capable SMTP settings for verification and
-   password-reset emails. `MAIL_FROM` must be an address authorized by your
-   mail provider.
+   generation, and production-capable SMTP settings for account and quiz-result
+   emails. For Gmail, set `SMTP_HOST` to `smtp.gmail.com`, `SMTP_PORT` to `465`,
+   `SMTP_USER` to the sending Gmail address, and `SMTP_PASS` to a Google App
+   Password. The sender defaults to `SMTP_USER`.
 5. Redeploy the API after changing API environment variables and redeploy the
    static site after changing `VITE_API_BASE_URL`; Vite embeds that value at
    build time.

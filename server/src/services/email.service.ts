@@ -9,18 +9,18 @@ export class EmailDeliveryError extends Error {
 }
 
 function createTransport() {
-  if (!env.MAILTRAP_HOST || !env.MAILTRAP_USER || !env.MAILTRAP_PASS) {
-    throw new Error("Email delivery is not configured. Set MAILTRAP_HOST, MAILTRAP_USER, and MAILTRAP_PASS.");
+  if (!env.SMTP_USER || !env.SMTP_PASS) {
+    throw new Error("Email delivery is not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASS.");
   }
   return nodemailer.createTransport({
-    host: env.MAILTRAP_HOST,
-    port: env.MAILTRAP_PORT,
-    secure: env.MAILTRAP_PORT === 465,
-    auth: { user: env.MAILTRAP_USER, pass: env.MAILTRAP_PASS },
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_PORT === 465,
+    auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
   });
 }
 
-function escapeHtml(value: string) {
+export function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -95,7 +95,13 @@ export function verificationEmailHtml(firstName: string, verificationUrl: string
 
 export async function sendAccountEmail(to: string, subject: string, text: string, html?: string) {
   try {
-    await createTransport().sendMail({ from: env.MAIL_FROM, to, subject, text, ...(html ? { html } : {}) });
+    await createTransport().sendMail({
+      from: env.MAIL_FROM ?? env.SMTP_USER,
+      to,
+      subject,
+      text,
+      ...(html ? { html } : {}),
+    });
   } catch (error) {
     console.error("Email delivery failed", error instanceof Error ? error.message : "Unknown email error");
     throw new EmailDeliveryError();
