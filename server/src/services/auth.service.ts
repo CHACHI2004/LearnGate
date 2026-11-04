@@ -21,6 +21,18 @@ async function createEmailToken(userId: string, purpose: "verify_email" | "reset
   return token;
 }
 
+async function sendVerificationEmail(user: { id: string; email: string; firstName: string }) {
+  await EmailTokenModel.deleteMany({ userId: user.id, purpose: "verify_email", usedAt: null });
+  const token = await createEmailToken(user.id, "verify_email");
+  const url = `${env.CLIENT_URL}/verify-email?token=${encodeURIComponent(token)}`;
+  await sendAccountEmail(
+    user.email,
+    "One quick step to join LearnGate — verify your email",
+    `Hi ${user.firstName},\n\nVerify your LearnGate account using this secure link (expires in 1 hour):\n${url}\n\nIf you did not create an account, you can ignore this email.`,
+    verificationEmailHtml(user.firstName, url),
+  );
+}
+
 export async function registerUser(input: {
   firstName: string;
   lastName: string;
@@ -34,6 +46,22 @@ export async function registerUser(input: {
   profileImageFileId?: import("mongoose").Types.ObjectId;
   profileImagePublicId?: string;
 }) {
+  const existingUnverifiedUser = await UserModel.findOne({
+    email: input.email,
+    isEmailVerified: false,
+  });
+  if (existingUnverifiedUser) {
+    await sendVerificationEmail({
+      id: existingUnverifiedUser.id,
+      email: existingUnverifiedUser.email,
+      firstName: existingUnverifiedUser.firstName,
+    });
+    return {
+      user: publicUser(existingUnverifiedUser),
+      message: "This account is already registered but not verified. A new verification email has been sent.",
+    };
+  }
+
   const allowFacultyWithCode = Boolean(env.FACULTY_ACCESS_CODE)
     && input.facultyAccessCode === env.FACULTY_ACCESS_CODE;
   const facultyApprovalStatus = input.role === "faculty"
@@ -54,14 +82,7 @@ export async function registerUser(input: {
     ...(input.profileImageFileId ? { profileImageFileId: input.profileImageFileId } : {}),
     ...(input.profileImagePublicId ? { profileImagePublicId: input.profileImagePublicId } : {}),
   });
-  const token = await createEmailToken(user.id, "verify_email");
-  const url = `${env.CLIENT_URL}/verify-email?token=${encodeURIComponent(token)}`;
-  await sendAccountEmail(
-    user.email,
-    "One quick step to join LearnGate — verify your email",
-    `Hi ${user.firstName},\n\nVerify your LearnGate account using this secure link (expires in 1 hour):\n${url}\n\nIf you did not create an account, you can ignore this email.`,
-    verificationEmailHtml(user.firstName, url),
-  );
+  await sendVerificationEmail({ id: user.id, email: user.email, firstName: user.firstName });
   return {
     user: publicUser(user),
     message: input.role === "faculty" && facultyApprovalStatus === "pending"
@@ -112,16 +133,8 @@ export async function requestPasswordReset(email: string) {
 export async function resendVerification(email: string) {
   const user = await UserModel.findOne({ email, isEmailVerified: false }).select("email firstName");
   if (!user) return;
-  await EmailTokenModel.deleteMany({ userId: user._id, purpose: "verify_email", usedAt: null });
-  const token = await createEmailToken(user.id, "verify_email");
-  const url = `${env.CLIENT_URL}/verify-email?token=${encodeURIComponent(token)}`;
   try {
-    await sendAccountEmail(
-      user.email,
-      "One quick step to join LearnGate — verify your email",
-      `Hi ${user.firstName},\n\nVerify your LearnGate account using this secure link (expires in 1 hour):\n${url}\n\nIf you did not create an account, you can ignore this email.`,
-      verificationEmailHtml(user.firstName, url),
-    );
+    await sendVerificationEmail({ id: user.id, email: user.email, firstName: user.firstName });
   } catch (error) {
     if (!(error instanceof EmailDeliveryError)) throw error;
   }

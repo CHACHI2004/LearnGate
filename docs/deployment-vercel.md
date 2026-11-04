@@ -26,7 +26,7 @@ Set these variables in the API host’s secret/environment settings, not in Verc
 - `COOKIE_SECURE=true`
 - `CLIENT_URL=https://learn.example.com`
 - `CLIENT_URLS=https://learn.example.com` (comma-separated exact trusted origins if there are additional production client origins)
-- `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER`, and `SMTP_PASS` for Gmail SMTP delivery
+- `RESEND_API_KEY` and `MAIL_FROM` for Resend email delivery (configure these on the Render API service, not Vercel)
 - Optional integrations: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `AI_PROVIDER=groq`, `GROQ_API_KEY`, and `GROQ_MODEL`
 
 Set `COOKIE_DOMAIN=.example.com` only if you deliberately need the cookie shared across subdomains. Otherwise leave it unset. Use HTTPS for both client and API. Do not put server secrets in `VITE_*` variables or commit them to the repository.
@@ -53,7 +53,7 @@ For Vercel preview deployments, add each trusted preview origin to `CLIENT_URLS`
 1. Open `https://api.example.com/api/v1/health` and confirm the API reports `status: "ok"`.
 2. Open the Vercel app and test account registration, email verification, login/logout, and a protected API request. Confirm the session cookie is HTTP-only, secure, and sent with credentialed requests.
 3. Test subject creation/enrollment, lesson and quiz workflows, and faculty reports with non-production test accounts.
-4. Test SMTP delivery, Cloudinary uploads, and Groq generation only when those providers are configured. Do not use real student data for deployment smoke tests.
+4. Test Resend delivery, Cloudinary uploads, and Groq generation only when those providers are configured. Do not use real student data for deployment smoke tests.
 5. Confirm logs contain no secrets and database backups are enabled.
 
 ## Updating

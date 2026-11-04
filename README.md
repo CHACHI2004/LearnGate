@@ -7,13 +7,13 @@ LearnGate is a full-stack learning management system for faculty-led courses. Fa
 - **Client:** React 19, TypeScript, Vite, Tailwind CSS, TanStack Query, Recharts
 - **API:** Node.js 20.19+, Express 5, TypeScript
 - **Database:** MongoDB with Mongoose
-- **Integrations:** Cloudinary uploads, Gmail SMTP email, Groq quiz and flashcard generation
+- **Integrations:** Cloudinary uploads, Resend email, Groq quiz and flashcard generation
 
 ## Requirements
 
 - Node.js `>=20.19.0` and npm
 - MongoDB locally or a MongoDB Atlas database
-- Optional provider credentials for Cloudinary, SMTP email, and an AI provider
+- Optional provider credentials for Cloudinary, Resend email, and an AI provider
 
 ## Local development
 
@@ -65,9 +65,9 @@ From the repository root:
 
 ## Configure optional integrations
 
-### Email and quiz-result notifications (SMTP)
+### Email and quiz-result notifications (Resend)
 
-Set `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` to the sending Gmail address, and `SMTP_PASS` to a Google App Password in `server/.env`. App Passwords require 2-Step Verification; do not use your regular Gmail password. Email will be sent from `SMTP_USER` unless an optional `MAIL_FROM` override is set. Account registration, verification, password recovery, and quiz-result emails depend on working SMTP credentials. When a student submits a quiz, the result is emailed separately to the student and the faculty member who owns that class. Never expose SMTP credentials to the client.
+Set `RESEND_API_KEY` and `MAIL_FROM` in the server environment. `MAIL_FROM` must use a sender address on a domain verified with Resend. Account registration, verification, password recovery, and quiz-result emails depend on working Resend credentials. When a student submits a quiz, the result is emailed separately to the student and the faculty member who owns that class. Never expose the API key to the client.
 
 ### File storage (Cloudinary)
 
@@ -81,7 +81,7 @@ The feature supports text-based PDF and PPTX quiz sources; image-only/scanned PD
 
 ### Server environment variables
 
-`server/.env.example` documents the complete server configuration, including runtime/API settings, MongoDB, JWT and cookies, CORS origins, faculty access codes, SMTP, Cloudinary, Groq settings, and quiz defaults. `client/.env.example` documents the public client API base URL and app name.
+`server/.env.example` documents the complete server configuration, including runtime/API settings, MongoDB, JWT and cookies, CORS origins, faculty access codes, Resend, Cloudinary, Groq settings, and quiz defaults. `client/.env.example` documents the public client API base URL and app name.
 
 ## Deployment
 

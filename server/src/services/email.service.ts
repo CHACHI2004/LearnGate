@@ -1,23 +1,10 @@
-import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 
 export class EmailDeliveryError extends Error {
   constructor() {
-    super("Email delivery failed. Configure SMTP and request the message again.");
+    super("Email delivery failed. Configure RESEND_API_KEY and MAIL_FROM, then request the message again.");
     this.name = "EmailDeliveryError";
   }
-}
-
-function createTransport() {
-  if (!env.SMTP_USER || !env.SMTP_PASS) {
-    throw new Error("Email delivery is not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASS.");
-  }
-  return nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT,
-    secure: env.SMTP_PORT === 465,
-    auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
-  });
 }
 
 export function escapeHtml(value: string) {
@@ -95,13 +82,19 @@ export function verificationEmailHtml(firstName: string, verificationUrl: string
 
 export async function sendAccountEmail(to: string, subject: string, text: string, html?: string) {
   try {
-    await createTransport().sendMail({
-      from: env.MAIL_FROM ?? env.SMTP_USER,
-      to,
-      subject,
-      text,
-      ...(html ? { html } : {}),
+    if (!env.RESEND_API_KEY || !env.MAIL_FROM) {
+      throw new Error("Resend email delivery is not configured");
+    }
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from: env.MAIL_FROM, to: [to], subject, text, ...(html ? { html } : {}) }),
+      signal: AbortSignal.timeout(10_000),
     });
+    if (!response.ok) throw new Error(`Resend API returned HTTP ${response.status}`);
   } catch (error) {
     console.error("Email delivery failed", error instanceof Error ? error.message : "Unknown email error");
     throw new EmailDeliveryError();

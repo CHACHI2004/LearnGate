@@ -12,7 +12,7 @@ quiz and flashcard generation jobs run in the API process.
 2. Create a production MongoDB database, such as MongoDB Atlas. Configure its
    network access to permit connections from Render and create a database user
    limited to the LearnGate database.
-3. Keep the Cloudinary, Groq, SMTP, database, and JWT credentials private.
+3. Keep the Cloudinary, Groq, Resend, database, and JWT credentials private.
    Never enter server secrets in a `VITE_*` variable.
 
 ## Create the Render services
@@ -29,10 +29,10 @@ quiz and flashcard generation jobs run in the API process.
    - Client `VITE_API_BASE_URL`: the API URL plus `/api/v1`, for example
      `https://learngate-api.onrender.com/api/v1`.
 4. Add Cloudinary credentials to enable file uploads, Groq credentials for AI
-   generation, and production-capable SMTP settings for account and quiz-result
-   emails. For Gmail, set `SMTP_HOST` to `smtp.gmail.com`, `SMTP_PORT` to `465`,
-   `SMTP_USER` to the sending Gmail address, and `SMTP_PASS` to a Google App
-   Password. The sender defaults to `SMTP_USER`.
+   generation, and production-capable Resend settings for account and quiz-result
+   emails. Set `RESEND_API_KEY` and `MAIL_FROM` for Resend; the sender address
+   must belong to a domain verified with Resend. The API sends email over HTTPS,
+   which works on Render's Free plan where outbound SMTP ports are blocked.
 5. Redeploy the API after changing API environment variables and redeploy the
    static site after changing `VITE_API_BASE_URL`; Vite embeds that value at
    build time.
