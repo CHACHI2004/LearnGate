@@ -7,13 +7,13 @@ LearnGate is a full-stack learning management system for faculty-led courses. Fa
 - **Client:** React 19, TypeScript, Vite, Tailwind CSS, TanStack Query, Recharts
 - **API:** Node.js 20.19+, Express 5, TypeScript
 - **Database:** MongoDB with Mongoose
-- **Integrations:** Cloudinary uploads, Resend email, Groq quiz and flashcard generation
+- **Integrations:** Cloudinary uploads, Brevo email, Groq quiz and flashcard generation
 
 ## Requirements
 
 - Node.js `>=20.19.0` and npm
 - MongoDB locally or a MongoDB Atlas database
-- Optional provider credentials for Cloudinary, Resend email, and an AI provider
+- Optional provider credentials for Cloudinary, Brevo email, and an AI provider
 
 ## Local development
 
@@ -65,9 +65,11 @@ From the repository root:
 
 ## Configure optional integrations
 
-### Email and quiz-result notifications (Resend)
+### Email and quiz-result notifications (Brevo)
 
-Set `RESEND_API_KEY` and `MAIL_FROM` in the server environment. `MAIL_FROM` must use a sender address on a domain verified with Resend. Account registration, verification, password recovery, and quiz-result emails depend on working Resend credentials. When a student submits a quiz, the result is emailed separately to the student and the faculty member who owns that class. Never expose the API key to the client.
+For local development only, set `MAILTRAP_HOST=sandbox.smtp.mailtrap.io`, `MAILTRAP_PORT=2525`, `MAILTRAP_USER`, and `MAILTRAP_PASS` from a Mailtrap Email Sandbox inbox. In Mailtrap, open **Email Testing → Inboxes → your inbox → SMTP Settings** to get the username and password. When `NODE_ENV=development`, emails are captured in that sandbox instead of being delivered to users. These settings are ignored in production; do not add them to Render.
+
+For production, set `BREVO_API_KEY` and `MAIL_FROM` on the Render API service. Create an API key in Brevo and verify the sender address (and sending domain, if applicable) in Brevo before sending. `MAIL_FROM` accepts either a bare address such as `no-reply@example.com` or a formatted sender such as `LearnGate <no-reply@example.com>`. Production emails are sent through Brevo's HTTPS transactional email API. Account registration, verification, password recovery, and quiz-result emails depend on working credentials. When a student submits a quiz, the result is emailed separately to the student and the faculty member who owns that class. Never expose provider credentials to the client.
 
 ### File storage (Cloudinary)
 
@@ -81,7 +83,7 @@ The feature supports text-based PDF and PPTX quiz sources; image-only/scanned PD
 
 ### Server environment variables
 
-`server/.env.example` documents the complete server configuration, including runtime/API settings, MongoDB, JWT and cookies, CORS origins, faculty access codes, Resend, Cloudinary, Groq settings, and quiz defaults. `client/.env.example` documents the public client API base URL and app name.
+`server/.env.example` documents the complete server configuration, including runtime/API settings, MongoDB, JWT and cookies, CORS origins, faculty access codes, Brevo, Cloudinary, Groq settings, and quiz defaults. `client/.env.example` documents the public client API base URL and app name.
 
 ## Deployment
 

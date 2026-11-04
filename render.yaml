@@ -31,7 +31,7 @@ services:
         sync: false
       - key: GROQ_MODEL
         value: openai/gpt-oss-20b
-      - key: RESEND_API_KEY
+      - key: BREVO_API_KEY
         sync: false
       - key: MAIL_FROM
         sync: false

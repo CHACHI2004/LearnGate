@@ -1,10 +1,23 @@
+import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 
 export class EmailDeliveryError extends Error {
   constructor() {
-    super("Email delivery failed. Configure RESEND_API_KEY and MAIL_FROM, then request the message again.");
+    super("Email delivery failed. Configure local Mailtrap sandbox credentials or production Brevo settings, then request the message again.");
     this.name = "EmailDeliveryError";
   }
+}
+
+export function shouldUseLocalMailtrap(nodeEnv: string) {
+  return nodeEnv === "development";
+}
+
+export function parseMailSender(value: string) {
+  const formattedSender = value.match(/^\s*(.*?)\s*<([^<>]+)>\s*$/);
+  return {
+    name: formattedSender?.[1].trim() || "LearnGate",
+    email: (formattedSender?.[2] ?? value).trim(),
+  };
 }
 
 export function escapeHtml(value: string) {
@@ -82,19 +95,47 @@ export function verificationEmailHtml(firstName: string, verificationUrl: string
 
 export async function sendAccountEmail(to: string, subject: string, text: string, html?: string) {
   try {
-    if (!env.RESEND_API_KEY || !env.MAIL_FROM) {
-      throw new Error("Resend email delivery is not configured");
+    if (shouldUseLocalMailtrap(env.NODE_ENV)) {
+      if (!env.MAILTRAP_HOST || !env.MAILTRAP_USER || !env.MAILTRAP_PASS) {
+        throw new Error("Local Mailtrap sandbox configuration requires MAILTRAP_HOST, MAILTRAP_USER, and MAILTRAP_PASS");
+      }
+      await nodemailer.createTransport({
+        host: env.MAILTRAP_HOST,
+        port: env.MAILTRAP_PORT,
+        secure: env.MAILTRAP_PORT === 465,
+        auth: { user: env.MAILTRAP_USER, pass: env.MAILTRAP_PASS },
+        connectionTimeout: 10_000,
+        greetingTimeout: 10_000,
+        socketTimeout: 10_000,
+      }).sendMail({
+        from: env.MAIL_FROM ?? "LearnGate <no-reply@example.com>",
+        to,
+        subject,
+        text,
+        ...(html ? { html } : {}),
+      });
+      return;
     }
-    const response = await fetch("https://api.resend.com/emails", {
+
+    if (!env.BREVO_API_KEY || !env.MAIL_FROM) {
+      throw new Error("Brevo email delivery is not configured");
+    }
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "api-key": env.BREVO_API_KEY,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from: env.MAIL_FROM, to: [to], subject, text, ...(html ? { html } : {}) }),
+      body: JSON.stringify({
+        sender: parseMailSender(env.MAIL_FROM),
+        to: [{ email: to }],
+        subject,
+        textContent: text,
+        ...(html ? { htmlContent: html } : {}),
+      }),
       signal: AbortSignal.timeout(10_000),
     });
-    if (!response.ok) throw new Error(`Resend API returned HTTP ${response.status}`);
+    if (!response.ok) throw new Error(`Brevo API returned HTTP ${response.status}`);
   } catch (error) {
     console.error("Email delivery failed", error instanceof Error ? error.message : "Unknown email error");
     throw new EmailDeliveryError();

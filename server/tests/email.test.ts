@@ -1,8 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { verificationEmailHtml } from "../src/services/email.service.js";
+import { parseMailSender, shouldUseLocalMailtrap, verificationEmailHtml } from "../src/services/email.service.js";
 import { quizResultEmailHtml } from "../src/services/quiz-result-email.service.js";
 
 describe("verification email template", () => {
+  it("uses the Mailtrap sandbox only in development", () => {
+    expect(shouldUseLocalMailtrap("development")).toBe(true);
+    expect(shouldUseLocalMailtrap("production")).toBe(false);
+    expect(shouldUseLocalMailtrap("test")).toBe(false);
+  });
+
+  it("parses a display name and address for Brevo, or accepts a bare address", () => {
+    expect(parseMailSender("LearnGate <no-reply@example.com>")).toEqual({
+      name: "LearnGate",
+      email: "no-reply@example.com",
+    });
+    expect(parseMailSender("no-reply@example.com")).toEqual({
+      name: "LearnGate",
+      email: "no-reply@example.com",
+    });
+  });
+
   it("renders a styled action button and a fallback link", () => {
     const html = verificationEmailHtml("Ari", "http://localhost:5173/verify-email?token=secure");
     expect(html).toContain("Verify my email");
